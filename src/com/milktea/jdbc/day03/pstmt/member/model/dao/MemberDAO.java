@@ -28,17 +28,17 @@ public class MemberDAO {
 	 * 6. 자원해제
 	 */
 	// 회원가입
-	public int insertMember(Member member) {
+	public int insertMember(Connection conn, Member member) {
 		String query = "insert into member_tbl(member_id, member_pwd, member_name, gender, age) "
 				+ "values('"+member.getMemberId()+"', '"+member.getMemberPwd()+"', '"+member.getMemberName()+"', '"+member.getGender()+"', "+member.getAge()+")";
 		query = "insert into member_tbl(member_id, member_pwd, member_name, gender, age) values(?,?,?,?,?)";
 		int result = 0;
-		Connection conn = null;
+		// Connection conn = null;
 		Statement stmt = null;
 		PreparedStatement pstmt = null;
 		try {
-			Class.forName(DRIVER_NAME);
-			conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+			//Class.forName(DRIVER_NAME);
+			// conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
 			stmt = conn.createStatement();
 			pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, member.getMemberId());
@@ -50,8 +50,8 @@ public class MemberDAO {
 			result = pstmt.executeUpdate(); 
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
 		}finally {
 			// 예외가 발생하든 안하든 실행문을 동작시켜줌.
 			try {
@@ -66,18 +66,18 @@ public class MemberDAO {
 		return result;
 	}
 	// 회원정보 수정
-	public int updateMember(Member member) {
+	public int updateMember(Connection conn,Member member) {
 		int result = 0;
 		// query = "UPDATE MEMBER_TBL SET member_pwd ='', gender = '', email = '', phone = '"+member.getPhone()+"', address = '"+member.getAddress()+"', hobby = '"+member.getHobby()+"' WHERE MEMBER_ID = '"+member.getMemberId()+"' ";
 		String query = "UPDATE MEMBER_TBL SET member_pwd ='"+member.getMemberPwd()+"', email = '"+member.getEmail()
 				+"',phone = '"+member.getPhone()+"', address = '"+member.getAddress()+"', hobby = '"+member.getHobby()
 				+"' WHERE MEMBER_ID = '"+member.getMemberId()+"' ";
 		query = "UPDATE MEMBER_TBL SET member_pwd =?, email = ?, phone = ?, address = ?, hobby = ? WHERE MEMBER_ID = ? ";
-		Connection conn = null;
+		// Connection conn = null;
 		PreparedStatement pstmt = null;
 		Statement stmt = null;
 		try {
-			conn = this.getConnection();
+			// conn = this.getConnection();
 			stmt = conn.createStatement();
 			pstmt = conn.prepareStatement(query);
 			pstmt.setString(1, member.getMemberPwd());
@@ -89,8 +89,8 @@ public class MemberDAO {
 			// 쿼리문 실행 코드 누락 주의!!
 			//result = stmt.executeUpdate(query);
 			result = pstmt.executeUpdate();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}finally {
@@ -106,18 +106,18 @@ public class MemberDAO {
 		return result;
 	}
 
-	public int deleteMember(String memberId) {
+	public int deleteMember(Connection conn, String memberId) {
 		int result = 0;
 		// 대소문자 구분없이 아이디 삭제 (모두 소문자로 적용해 줌)
 		String query = " DELETE FROM MEMBER_TBL WHERE LOWER(MEMBER_ID) = LOWER('"+memberId+"')";
 		query = "DELETE FROM MEMBER_TBL WHERE LOWER(MEMBER_ID) = ?";
 		//		String query = "DELETE FROM MEMBER_TBL WHERE MEMBER_ID = '"+memberId+"'";
-		Connection conn = null;
+		// Connection conn = null;
 		Statement stmt = null;
 		PreparedStatement pstmt = null;
 		
 		try {
-			conn = this.getConnection();
+			//conn = this.getConnection();
 			// Statement 생성
 			stmt = conn.createStatement();
 			pstmt = conn.prepareStatement(query);
@@ -125,11 +125,9 @@ public class MemberDAO {
 			// 쿼리문 실행
 			//result = stmt.executeUpdate(query);
 			result = pstmt.executeUpdate();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			try {
@@ -145,14 +143,14 @@ public class MemberDAO {
 		return result;
 	}
 	// 회원 전체 정보 조회
-	public List<Member> selectList() {
+	public List<Member> selectList(Connection conn) {
 		List<Member> mList = new ArrayList<Member>();
 		String query = "select * from member_tbl"; // 정렬은 쿼리문에서 정리 
-		Connection conn = null;
+		//Connection conn = null;
 		Statement stmt = null;
 		ResultSet rset = null;
 		try {
-			conn = this.getConnection();
+			//conn = this.getConnection();
 			stmt = conn.createStatement();
 			rset = stmt.executeQuery(query);
 			// rset에 테이블 형태로 데이터가 있으나 그대로 사용못함
@@ -164,8 +162,8 @@ public class MemberDAO {
 				// mLIst에 담을 수 있도록 add 해 줌
 				mList.add(member);
 			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -189,16 +187,16 @@ public class MemberDAO {
 	 *  3. 위치홀더에 값 셋팅
 	 *  4. 쿼리문 실행(query문 전달하지 않음)
 	 */
-	public Member selectOneById(String memberId) {
+	public Member selectOneById(Connection conn, String memberId) {
 		String query = "SELECT * FROM MEMBER_TBL WHERE MEMBER_ID = '"+memberId+"'";
 		query =" SELECT * FROM MEMBER_TBL WHERE MEMBER_ID = ? ";
 		Member member = null;
-		Connection conn = null;
+		//Connection conn = null;
 		Statement stmt = null;
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
 		try {
-			conn = this.getConnection();
+			//conn = this.getConnection();
 			stmt = conn.createStatement();
 			pstmt = conn.prepareStatement(query);
 			
@@ -211,8 +209,8 @@ public class MemberDAO {
 				// rset은 member로 변환되어야 함(rsetToMember)
 				member = this.rsetToMember(rset);
 			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}finally {

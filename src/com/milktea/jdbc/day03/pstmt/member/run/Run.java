@@ -8,6 +8,4 @@ public class Run {
 		MemberView view = new MemberView();
 		view.startProgram();
 	}
-
-	
 }
