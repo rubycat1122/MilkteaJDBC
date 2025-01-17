@@ -1,5 +1,9 @@
 package com.milktea.jdbc.day03.pstmt.member.model.dao;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.sql.*;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -8,16 +12,30 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import com.milktea.jdbc.day03.pstmt.member.model.vo.Member;
 
 
 public class MemberDAO {
-	private static final String DRIVER_NAME = "oracle.jdbc.driver.OracleDriver";
-	private static final String URL = "jdbc:oracle:thin:@127.0.0.1:1521:xe";
-	private static final String USERNAME = "kh";
-	private static final String PASSWORD = "kh";
-
+private static final String FILE_NAME = "resources/query.properties";
+	//	private static final String DRIVER_NAME = "oracle.jdbc.driver.OracleDriver";
+//	private static final String URL = "jdbc:oracle:thin:@127.0.0.1:1521:xe";
+//	private static final String USERNAME = "kh";
+//	private static final String PASSWORD = "kh";
+	private Properties prop;
+	
+	public MemberDAO() {
+		try {
+			Reader reader = new FileReader(FILE_NAME);
+			prop = new Properties();
+			prop.load(reader);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	/*
 	 * 여기서 JDBC 코딩 할거임
 	 * 1. 드라이버 등록
@@ -32,6 +50,7 @@ public class MemberDAO {
 		String query = "insert into member_tbl(member_id, member_pwd, member_name, gender, age) "
 				+ "values('"+member.getMemberId()+"', '"+member.getMemberPwd()+"', '"+member.getMemberName()+"', '"+member.getGender()+"', "+member.getAge()+")";
 		query = "insert into member_tbl(member_id, member_pwd, member_name, gender, age) values(?,?,?,?,?)";
+		query = prop.getProperty("insertMember");
 		int result = 0;
 		// Connection conn = null;
 		Statement stmt = null;
@@ -73,6 +92,7 @@ public class MemberDAO {
 				+"',phone = '"+member.getPhone()+"', address = '"+member.getAddress()+"', hobby = '"+member.getHobby()
 				+"' WHERE MEMBER_ID = '"+member.getMemberId()+"' ";
 		query = "UPDATE MEMBER_TBL SET member_pwd =?, email = ?, phone = ?, address = ?, hobby = ? WHERE MEMBER_ID = ? ";
+		query = prop.getProperty("updateMember");
 		// Connection conn = null;
 		PreparedStatement pstmt = null;
 		Statement stmt = null;
@@ -110,8 +130,9 @@ public class MemberDAO {
 		int result = 0;
 		// 대소문자 구분없이 아이디 삭제 (모두 소문자로 적용해 줌)
 		String query = " DELETE FROM MEMBER_TBL WHERE LOWER(MEMBER_ID) = LOWER('"+memberId+"')";
+//		String query = "DELETE FROM MEMBER_TBL WHERE MEMBER_ID = '"+memberId+"'";
 		query = "DELETE FROM MEMBER_TBL WHERE LOWER(MEMBER_ID) = ?";
-		//		String query = "DELETE FROM MEMBER_TBL WHERE MEMBER_ID = '"+memberId+"'";
+		query = prop.getProperty("deleteMember");
 		// Connection conn = null;
 		Statement stmt = null;
 		PreparedStatement pstmt = null;
@@ -146,6 +167,7 @@ public class MemberDAO {
 	public List<Member> selectList(Connection conn) {
 		List<Member> mList = new ArrayList<Member>();
 		String query = "select * from member_tbl"; // 정렬은 쿼리문에서 정리 
+		query = prop.getProperty("selectList");
 		//Connection conn = null;
 		Statement stmt = null;
 		ResultSet rset = null;
@@ -190,6 +212,7 @@ public class MemberDAO {
 	public Member selectOneById(Connection conn, String memberId) {
 		String query = "SELECT * FROM MEMBER_TBL WHERE MEMBER_ID = '"+memberId+"'";
 		query =" SELECT * FROM MEMBER_TBL WHERE MEMBER_ID = ? ";
+		query = prop.getProperty("selectOneById");
 		Member member = null;
 		//Connection conn = null;
 		Statement stmt = null;
