@@ -241,10 +241,4 @@ public class MemberDAO {
 		Member member = new Member(memberId, memberPwd, memberName, gender, age, email, phone, address, hobby, enrollDate);
 		return member;
 	}
-
-	private Connection getConnection() throws ClassNotFoundException, SQLException {
-		Class.forName(DRIVER_NAME);
-		Connection conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
-		return conn;
-	}
 }
